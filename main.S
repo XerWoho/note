@@ -1,6 +1,11 @@
-%include "exit.S"
-%include "help.S"
-%include "fs.S"
+extern sys_exit
+extern help
+
+extern clear
+extern increment_lines
+extern open_file
+extern write_file
+extern close_file
 
 section .data
 	file_name db 'undefined.txt', 0
@@ -22,16 +27,16 @@ _start:
 	; function definition
 	read:
 		mov rdi, 0    				; unsigned int fd => 1 meaning stdin
-		mov rsi, data				; rsi keeps track of stdin within buffer
+		lea rsi, [rel data]				; rsi keeps track of stdin within buffer
 
 		mov rdx, 1					; 1 length buffer
 		mov rax, 0					; system call x86 for read
 		syscall						; calls interrupt
 
-		cmp byte [data], 13h ; compare the buffer against 'CTRL + S'
+		cmp byte [rel data], 13h ; compare the buffer against 'CTRL + S'
 		je finish ; if its equal, finish
 
-		cmp byte [data], 0Ah ; compare the buffer against '\n'
+		cmp byte [rel data], 0Ah ; compare the buffer against '\n'
 		jne read_skip
 		call increment_lines
 
@@ -46,7 +51,7 @@ _start:
 		call clear ; clear lines
 
 		call close_file ; close file
-		jmp exit ; exit programm
+		jmp sys_exit ; exit programm
 
 
 

@@ -1,16 +1,20 @@
-%include "write.S"
-%include "exit.S"
+extern write
+extern sys_exit
 
 section .data
 	fd dq 1
 
 
+global open_file
+global write_file
+global close_file
+
 open_file:
-	cmp byte [fd], 1
-	jne skip
+	cmp byte [rel fd], 1
+	jne open_file_skip
 	ret
 
-	skip:
+	open_file_skip:
 
 	; the filename should be set
 	; to rdi before calling the function
@@ -21,22 +25,22 @@ open_file:
 	syscall
 
 	cmp rax, 0
-	je exit
+	je sys_exit
 
-	mov [fd], rax				; store the rax return value to fd byte
+	mov [rel fd], rax				; store the rax return value to fd byte
 	ret
 
 
 write_file:
 	; rsi and rdx should be defined before calling write_file
-	
+
 	; mov rsi, data				; the buffer
 	; mov rdx, 1					; number of bytes
-	mov rdi, [fd]			 	; set the file handle to rdi
+	lea rdi, [rel fd]			 	; set the file handle to rdi
 	call write
 
 	cmp rax, 0
-	je exit
+	je sys_exit
 
 
 close_file:	
@@ -44,4 +48,4 @@ close_file:
 	syscall
 
 	cmp rax, 0
-	je exit
+	je sys_exit

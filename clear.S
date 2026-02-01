@@ -1,4 +1,4 @@
-%include "exit.S"
+extern sys_exit
 
 section .data
 	lines dq 3
@@ -9,8 +9,13 @@ section .data
 	mup db `\33[1A`, 0
 	mup_len equ $ - mup
 
+
+global increment_lines
+global clear
+
+
 increment_lines:
-	inc byte [lines]
+	inc byte [rel lines]
 	ret
 
 
@@ -23,7 +28,7 @@ move_up:
 	syscall									; calls interrupt
 
 	cmp rax, 0
-	jl exit
+	jl sys_exit
 
 	ret
 
@@ -37,15 +42,15 @@ clear_line:
 	syscall						; calls interrupt
 
 	cmp rax, 0
-	jl exit
+	jl sys_exit
 
 	ret
 
 clear:
-	dec byte [lines]
+	dec byte [rel lines]
 	call clear_line
 
-	cmp byte [lines], 0
+	cmp byte [rel lines], 0
 	jne clear_skip
 	ret
 

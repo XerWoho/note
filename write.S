@@ -1,5 +1,6 @@
-%include "exit.S"
+extern sys_exit
 
+global write
 
 write:
 	; rsi, rdi, and rdx should set before
@@ -12,6 +13,6 @@ write:
 	syscall				; calls interrupt
 
 	cmp rax, 0
-	je exit
+	je sys_exit
 	
 	ret

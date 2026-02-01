@@ -1,5 +1,5 @@
-%include "exit.S"
-%include "clear.S"
+extern increment_lines
+extern sys_exit
 
 section .data
 	welcome_text db "Welcome to Notepad, write your notes, and then save them, pretty quick.", 0xA
@@ -7,6 +7,8 @@ section .data
 
 	help_text db "If you need to save your notes, just press CTRL + S, and then hit enter.", 0xA, 0xA
 	help_text_len equ $ - help_text
+
+global help
 
 help:
 	mov rdi, 1    					; unsigned int fd => 1 meaning stdout
@@ -16,7 +18,7 @@ help:
 	syscall							; calls interrupt
 
 	cmp rax, 0
-	je exit
+	je sys_exit
 
 	call increment_lines
 
@@ -27,7 +29,7 @@ help:
 	syscall							; calls interrupt
 
 	cmp rax, 0
-	je exit
+	je sys_exit
 
 	call increment_lines
 	call increment_lines

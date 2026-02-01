@@ -1,7 +1,7 @@
 section .data
-section .bss
+global sys_exit
 
-exit:
+sys_exit:
 	mov rax, 60 					; exit syscall
 	mov rdi, 0						; return value (0 >= no error)
 	syscall
