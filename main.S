@@ -9,7 +9,7 @@ section .bss
 	data resb 1 					; REServe Byte of length 1, for "variable" data
 
 section .text
-	global _start ; start of the assembly code
+	global _start
 
 _start:
 	call help
