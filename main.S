@@ -76,14 +76,14 @@ _start:
 		no_newline:
 
 		cmp byte [buffer], 7Fh 	; compare the buffer against 'DEL'
-		jne raed_no_delete
+		jne read_no_delete
 
 		lea rdi, [rel temp_data]
 		lea rsi, [rel temp_data_len]
 		call delete
 		jmp read_data
 
-		raed_no_delete:
+		read_no_delete:
 		movzx rcx, byte [temp_data_len]
 		mov al, [buffer]
 		lea rbx, [rel temp_data]
