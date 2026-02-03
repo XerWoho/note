@@ -1,15 +1,26 @@
-ASM     = nasm
-ASMFLAGS= -f elf64
-LD      = ld
-LDFLAGS = -no-pie
+ASM      = nasm
+ASMFLAGS = -f elf64
+LD       = ld
 
-OBJS = main.o fs.o help.o exit.o clear.o write.o
+SRC_STD     = std/fs.S std/read.S std/write.S
+SRC_HELPERS = helpers/clear.S helpers/exit.S helpers/termios.S helpers/help.S helpers/io.S
+SRC_MAIN    = main.S
 
-notepad: $(OBJS)
-	$(LD) $(LDFLAGS) -o $@ $(OBJS) 
+SRCS = $(SRC_MAIN) $(SRC_STD) $(SRC_HELPERS)
 
-%.o: %.S
+OBJS = $(SRCS:%.S=bin/obj/%.o)
+
+BIN = bin/notepad
+
+all: $(BIN)
+
+$(BIN): $(OBJS)
+	@mkdir -p bin
+	$(LD) -o $@ $(OBJS)
+
+bin/obj/%.o: %.S
+	@mkdir -p $(dir $@)
 	$(ASM) $(ASMFLAGS) $< -o $@
 
 clean:
-	rm -f $(OBJS) notepad
+	rm -rf bin
